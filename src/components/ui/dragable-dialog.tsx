@@ -18,11 +18,13 @@ export type Position = { x: number; y: number };
 export type DragableDialogProps = {
   open: boolean;
   onClose: () => void;
+  title?: string;
 } & ChildrenWithin;
 
 export const DragableDialog: React.FC<DragableDialogProps> = ({
   open,
   onClose,
+  title = 'Dialog',
   children,
 }) => {
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -160,7 +162,7 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
         <div ref={dialogRef} className={dialogClassName}>
           {/*header bar to drag*/}
           <div className={toolbarClassName} onMouseDown={handleStartDragging}>
-            <div>Dialog</div>
+            <div className={'select-none'}>{title}</div>
             <div className={'flex p-1 gap-1'}>
               <Button
                 size={'sm'}
