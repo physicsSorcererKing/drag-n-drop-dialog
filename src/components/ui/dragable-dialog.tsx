@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button.tsx';
 import { cn } from '@/lib/utils.ts';
 
 export type DialogState = 'minimized' | 'maximized' | 'normal';
-export type Position = { x: number; y: number };
 export type DragableDialogProps = {
   open: boolean;
   onClose: () => void;
   title?: string;
 } & ChildrenWithin;
+
+type Position = { x: number; y: number };
+type Size = { width: number; height: number };
 
 export const DragableDialog: React.FC<DragableDialogProps> = ({
   open,
@@ -42,6 +44,33 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
 
   const handleEndDragging = useCallback(() => {
     setIsDragging(false);
+
+    // fix the position if the dialog is out of the screen
+    if (!dialogRef.current) return;
+
+    // get window size
+    const windowSize: Size = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+
+    // get dialog client rect
+    const rect = dialogRef.current.getBoundingClientRect();
+
+    // toolbar's height should not be out of the screen
+    if (rect.top < 0) {
+      setPosition((prev) => ({ ...prev, y: 0 }));
+    }
+    if (rect.top > windowSize.height - 40) {
+      setPosition((prev) => ({ ...prev, y: windowSize.height - 40 }));
+    }
+    // dialog's width should not be fully out of the screen
+    if (rect.left < -rect.width + 8) {
+      setPosition((prev) => ({ ...prev, x: -rect.width + 8 }));
+    }
+    if (rect.left > windowSize.width - 8) {
+      setPosition((prev) => ({ ...prev, x: windowSize.width - 8 }));
+    }
   }, []);
 
   const handleMouseMove = useCallback(
