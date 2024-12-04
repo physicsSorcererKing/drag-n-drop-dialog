@@ -1,0 +1,7 @@
+{
+  "*.{js,jsx,ts,tsx}": [
+    "cross-env NODE_ENV=production eslint --fix",
+    "prettier --write --ignore-unknown"
+  ],
+  "**/*.(md|json|css|scss)": "prettier --write --ignore-unknown"
+}
