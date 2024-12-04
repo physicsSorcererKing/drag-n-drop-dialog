@@ -81,9 +81,9 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
   };
 
   const dialogClassName = cn(
-    'absolute w-[600px] min-h-1 h-[400px] flex flex-col rounded-md shadow-md',
+    'absolute w-[600px] min-h-10 h-[400px] flex flex-col rounded-md shadow-md',
     !open && 'hidden',
-    state === 'minimized' && 'h-8',
+    state === 'minimized' && 'h-10',
     state === 'maximized' && 'h-full w-full',
   );
 
@@ -133,7 +133,7 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
         dialogRef.current.style.removeProperty('left');
         dialogRef.current.style.removeProperty('top');
         dialogRef.current.style.right = '0';
-        dialogRef.current.style.bottom = '8px';
+        dialogRef.current.style.bottom = '0';
         break;
       case 'maximized':
         dialogRef.current.style.removeProperty('right');
