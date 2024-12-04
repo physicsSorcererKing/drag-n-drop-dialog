@@ -2,13 +2,7 @@
 // 2. should be able to close the dialog
 // 3. should be able to minimize the dialog
 // 4. should be able to maximize the dialog
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button.tsx';
 import { cn } from '@/lib/utils.ts';
@@ -103,6 +97,18 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
     state === 'minimized' && 'hidden',
   );
 
+  // initialize dialog position
+  useLayoutEffect(() => {
+    if (open) {
+      setPosition({
+        x: window.innerWidth / 2 - dialogRef.current!.offsetWidth / 2,
+        y: window.innerHeight / 2 - dialogRef.current!.offsetHeight / 2,
+      });
+    } else {
+      setState('normal');
+    }
+  }, [open]);
+
   // add event listeners to background to handle mouse move
   useLayoutEffect(() => {
     if (isDragging) {
@@ -120,7 +126,7 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
 
   // update dialog position
   useLayoutEffect(() => {
-    if (!isDragging || !dialogRef.current) return;
+    if (!dialogRef.current) return;
 
     switch (state) {
       case 'minimized':
@@ -140,14 +146,7 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
         dialogRef.current.style.left = `${position.x}px`;
         dialogRef.current.style.top = `${position.y}px`;
     }
-  }, [position, isDragging, state]);
-
-  // state set to normal when dialog is closed
-  useEffect(() => {
-    if (!open) {
-      setState('normal');
-    }
-  }, [open]);
+  }, [position, state]);
 
   return (
     // dialog backdrop
