@@ -24,8 +24,8 @@
     /* Path Alias */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src/*.ts", "src/*.tsx", "src/@types/**.d.ts"]
+  "include": ["src/*.ts", "src/**/*.tsx", "src/@types/**.d.ts"]
 }
