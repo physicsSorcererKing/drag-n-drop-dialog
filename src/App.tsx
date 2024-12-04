@@ -14,7 +14,7 @@ export const App: FC = () => {
     <Container>
       <Button onClick={handleTrigger}>Click to Open Dialog</Button>
       <DragableDialog open={open} onClose={setOpen.bind(null, false)}>
-        <div className={'w-[100px] h-[100px] flex items-center justify-center'}>
+        <div className={'w-full h-full flex items-center justify-center'}>
           Dialog Content
         </div>
       </DragableDialog>
