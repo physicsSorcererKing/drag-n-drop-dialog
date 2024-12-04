@@ -1,4 +1,10 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import {
+  IconMaximize,
+  IconPictureInPictureOn,
+  IconPictureInPictureTop,
+  IconX,
+} from '@tabler/icons-react';
 
 import { Button } from '@/components/ui/button.tsx';
 import { cn } from '@/lib/utils.ts';
@@ -188,32 +194,35 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
             <div className={'select-none'}>{title}</div>
             <div className={'flex p-1 gap-1'}>
               <Button
-                size={'sm'}
+                size={'icon'}
+                className={cn(state === 'minimized' && 'hidden')}
                 onMouseDown={preventToolbarButtonPropagation}
                 onClick={handleMinimize}
               >
-                min
+                <IconPictureInPictureOn />
               </Button>
               <Button
-                size={'sm'}
-                onMouseDown={preventToolbarButtonPropagation}
-                onClick={handleMaximize}
-              >
-                MAX
-              </Button>
-              <Button
-                size={'sm'}
+                size={'icon'}
+                className={cn(state === 'normal' && 'hidden')}
                 onMouseDown={preventToolbarButtonPropagation}
                 onClick={handleNormal}
               >
-                normal
+                <IconPictureInPictureTop />
               </Button>
               <Button
-                size={'sm'}
+                size={'icon'}
+                className={cn(state === 'maximized' && 'hidden')}
+                onMouseDown={preventToolbarButtonPropagation}
+                onClick={handleMaximize}
+              >
+                <IconMaximize />
+              </Button>
+              <Button
+                size={'icon'}
                 onMouseDown={preventToolbarButtonPropagation}
                 onClick={handleClose}
               >
-                X
+                <IconX />
               </Button>
             </div>
           </div>
