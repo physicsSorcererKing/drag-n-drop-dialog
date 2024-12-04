@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { cn } from '@/lib/utils.ts';
 
 export type DialogState = 'minimized' | 'maximized' | 'normal';
+export type Position = { x: number; y: number };
 export type DragableDialogProps = {
   open: boolean;
   onClose: () => void;
@@ -26,31 +27,44 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
 }) => {
   const backgroundRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+
   const [state, setState] = useState<DialogState>('normal');
-  const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  const handleStartDragging = (_e: React.MouseEvent) => {
+  // the current position of the dialog
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  // the initial mouse position when the dragging starts
+  const startDragPos = useRef<Position>({ x: 0, y: 0 });
+
+  const handleStartDragging = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
     if (state !== 'normal') return;
+
     setIsDragging(true);
+    startDragPos.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    };
   };
 
-  const handleEndDragging = (_e: React.MouseEvent) => {
+  const handleEndDragging = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isDragging) return;
-      setPosition((prev) => ({
-        x: prev.x + e.movementX,
-        y: prev.y + e.movementY,
+      setPosition(() => ({
+        x: e.clientX - startDragPos.current.x,
+        y: e.clientY - startDragPos.current.y,
       }));
     },
     [isDragging],
   );
 
-  const handleMinimize = () => {
+  const handleMinimize = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setState('minimized');
   };
 
@@ -66,6 +80,10 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
     onClose();
   };
 
+  const preventToolbarButtonPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   const dialogClassName = cn(
     'absolute w-[600px] min-h-1 h-[400px] flex flex-col rounded-md shadow-md',
     !open && 'hidden',
@@ -73,8 +91,13 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
     state === 'maximized' && 'h-full w-full',
   );
 
+  const toolbarClassName = cn(
+    'flex justify-between items-center pl-2 bg-blue-400 rounded-t-md cursor-move',
+    state !== 'normal' && 'cursor-default',
+  );
+
   const contentClassName = cn(
-    'bg-white w-full h-full',
+    'bg-white w-full h-full rounded-b-md overflow-auto',
     state === 'minimized' && 'hidden',
   );
 
@@ -82,13 +105,16 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
   useLayoutEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleEndDragging);
     } else {
       document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleEndDragging);
     }
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleEndDragging);
     };
-  }, [handleMouseMove, isDragging]);
+  }, [handleEndDragging, handleMouseMove, isDragging]);
 
   // update dialog position
   useLayoutEffect(() => {
@@ -133,25 +159,35 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
       <div className={'relative w-full h-full'}>
         <div ref={dialogRef} className={dialogClassName}>
           {/*header bar to drag*/}
-          <div
-            className={
-              'flex justify-between items-center pl-2 bg-blue-400 rounded-t-md'
-            }
-            onMouseDown={handleStartDragging}
-            onMouseUp={handleEndDragging}
-          >
+          <div className={toolbarClassName} onMouseDown={handleStartDragging}>
             <div>Dialog</div>
             <div className={'flex p-1 gap-1'}>
-              <Button size={'sm'} onClick={handleMinimize}>
+              <Button
+                size={'sm'}
+                onMouseDown={preventToolbarButtonPropagation}
+                onClick={handleMinimize}
+              >
                 min
               </Button>
-              <Button size={'sm'} onClick={handleMaximize}>
+              <Button
+                size={'sm'}
+                onMouseDown={preventToolbarButtonPropagation}
+                onClick={handleMaximize}
+              >
                 MAX
               </Button>
-              <Button size={'sm'} onClick={handleNormal}>
+              <Button
+                size={'sm'}
+                onMouseDown={preventToolbarButtonPropagation}
+                onClick={handleNormal}
+              >
                 normal
               </Button>
-              <Button size={'sm'} onClick={handleClose}>
+              <Button
+                size={'sm'}
+                onMouseDown={preventToolbarButtonPropagation}
+                onClick={handleClose}
+              >
                 X
               </Button>
             </div>
