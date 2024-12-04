@@ -1,7 +1,3 @@
-// 1. should be able to drag n drop the dialog
-// 2. should be able to close the dialog
-// 3. should be able to minimize the dialog
-// 4. should be able to maximize the dialog
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button.tsx';
@@ -59,8 +55,7 @@ export const DragableDialog: React.FC<DragableDialogProps> = ({
     [isDragging],
   );
 
-  const handleMinimize = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleMinimize = () => {
     setState('minimized');
   };
 
